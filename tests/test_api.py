@@ -1,6 +1,7 @@
 """Tests for the AnkiConnect HTTP client."""
 from __future__ import annotations
 
+import aiohttp
 import pytest
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -79,3 +80,54 @@ async def test_review_active_coerces_bool(hass, aioclient_mock, result, expected
     )
     client = _client(hass)
     assert await client.async_review_active() is expected
+
+
+async def test_request_gives_up_after_repeated_disconnects(hass, aioclient_mock):
+    # AnkiConnect closes keep-alive connections; persistent disconnects exhaust
+    # the retries and surface as AnkiConnectError.
+    aioclient_mock.post(
+        "http://1.2.3.4:8765", exc=aiohttp.ServerDisconnectedError()
+    )
+    client = _client(hass)
+    with pytest.raises(AnkiConnectError):
+        await client.async_version()
+    assert aioclient_mock.call_count == 3
+
+
+class _FakeResponse:
+    def __init__(self, payload: dict) -> None:
+        self._payload = payload
+
+    async def __aenter__(self) -> "_FakeResponse":
+        return self
+
+    async def __aexit__(self, *exc) -> bool:
+        return False
+
+    def raise_for_status(self) -> None:
+        pass
+
+    async def json(self, content_type=None) -> dict:
+        return self._payload
+
+
+class _FlakySession:
+    """Fails with ServerDisconnectedError for the first N posts, then succeeds."""
+
+    def __init__(self, fail_times: int, payload: dict) -> None:
+        self.calls = 0
+        self._fail = fail_times
+        self._payload = payload
+
+    def post(self, url, json=None):
+        self.calls += 1
+        if self.calls <= self._fail:
+            raise aiohttp.ServerDisconnectedError()
+        return _FakeResponse(self._payload)
+
+
+async def test_request_retries_on_disconnect_then_succeeds():
+    session = _FlakySession(1, {"result": ["Default"], "error": None})
+    client = AnkiConnectClient("1.2.3.4", 8765, session)
+    assert await client.async_deck_names() == ["Default"]
+    assert session.calls == 2  # failed once, then a fresh connection worked

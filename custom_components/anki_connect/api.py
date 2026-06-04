@@ -23,6 +23,11 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# AnkiConnect's minimal HTTP server closes keep-alive connections without
+# advertising it, so aiohttp can hand us a dead pooled connection and raise
+# ServerDisconnectedError. A retry on a fresh connection succeeds.
+_MAX_ATTEMPTS = 3
+
 
 class AnkiConnectError(Exception):
     """Raised when AnkiConnect returns an error or is unreachable."""
@@ -59,15 +64,24 @@ class AnkiConnectClient:
         if self._api_key:
             payload["key"] = self._api_key
 
-        try:
-            async with asyncio.timeout(self._timeout):
-                async with self._session.post(self._url, json=payload) as resp:
-                    resp.raise_for_status()
-                    data = await resp.json(content_type=None)
-        except (aiohttp.ClientError, asyncio.TimeoutError) as err:
-            raise AnkiConnectError(
-                f"AnkiConnect request '{action}' failed: {err}"
-            ) from err
+        data: Any = None
+        for attempt in range(_MAX_ATTEMPTS):
+            try:
+                async with asyncio.timeout(self._timeout):
+                    async with self._session.post(self._url, json=payload) as resp:
+                        resp.raise_for_status()
+                        data = await resp.json(content_type=None)
+                break
+            except aiohttp.ServerDisconnectedError as err:
+                # Stale pooled connection — retry on a fresh one.
+                if attempt + 1 >= _MAX_ATTEMPTS:
+                    raise AnkiConnectError(
+                        f"AnkiConnect request '{action}' failed: {err}"
+                    ) from err
+            except (aiohttp.ClientError, asyncio.TimeoutError) as err:
+                raise AnkiConnectError(
+                    f"AnkiConnect request '{action}' failed: {err}"
+                ) from err
 
         if not isinstance(data, dict) or "error" not in data:
             raise AnkiConnectError(f"Unexpected AnkiConnect response: {data!r}")
