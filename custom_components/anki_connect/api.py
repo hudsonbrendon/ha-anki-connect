@@ -14,7 +14,6 @@ from .const import (
     ACTION_MODEL_NAMES,
     ACTION_PROFILES,
     ACTION_REVIEW_ACTIVE,
-    ACTION_REVIEWED_BY_DAY,
     ACTION_REVIEWED_TODAY,
     ACTION_TAGS,
     ACTION_VERSION,
@@ -88,9 +87,6 @@ class AnkiConnectClient:
 
     async def async_num_reviewed_today(self) -> int:
         return await self.request(ACTION_REVIEWED_TODAY) or 0
-
-    async def async_reviews_by_day(self) -> list[list]:
-        return await self.request(ACTION_REVIEWED_BY_DAY) or []
 
     async def async_profiles(self) -> list[str]:
         return await self.request(ACTION_PROFILES) or []

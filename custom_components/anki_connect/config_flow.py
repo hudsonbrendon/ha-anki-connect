@@ -73,7 +73,14 @@ class AnkiConnectConfigFlow(ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             if await self._async_reachable(user_input):
-                return self.async_update_reload_and_abort(entry, data=user_input)
+                # Keep the unique id in sync when host/port change. Passing the
+                # entry's own new id avoids the self-collision that
+                # _abort_if_unique_id_configured would raise here.
+                return self.async_update_reload_and_abort(
+                    entry,
+                    data=user_input,
+                    unique_id=f"{user_input[CONF_HOST]}:{user_input[CONF_PORT]}",
+                )
             errors["base"] = "cannot_connect"
 
         return self.async_show_form(
