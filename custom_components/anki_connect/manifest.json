@@ -1,0 +1,13 @@
+{
+  "domain": "anki_connect",
+  "name": "Anki",
+  "codeowners": ["@hudsonbrendon"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/hudsonbrendon/ha-anki-connect",
+  "integration_type": "service",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/hudsonbrendon/ha-anki-connect/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

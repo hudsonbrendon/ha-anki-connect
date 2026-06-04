@@ -1,0 +1,207 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Anki",
+        "description": "Anki must be running with the AnkiConnect add-on. For access from another machine, set ANKICONNECT_BIND_ADDRESS=0.0.0.0 in the add-on configuration.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "name": "Name",
+          "api_key": "API key (optional)"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Anki",
+        "description": "Update the connection details for this Anki instance.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "name": "Name",
+          "api_key": "API key (optional)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach AnkiConnect. Check the host, port, API key, and that Anki is running with the add-on enabled."
+    },
+    "abort": {
+      "already_configured": "This Anki instance is already configured.",
+      "reconfigure_successful": "Anki reconfigured successfully."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Anki options",
+        "data": {
+          "scan_interval": "Polling interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "cards_reviewed_today": { "name": "Cards reviewed today" },
+      "cards_due": { "name": "Cards due" },
+      "new_cards": { "name": "New cards" },
+      "learning_cards": { "name": "Learning cards" },
+      "review_cards": { "name": "Review cards" },
+      "total_cards": { "name": "Total cards" },
+      "decks": { "name": "Decks" },
+      "anki_connect_version": { "name": "AnkiConnect version" },
+      "profiles": { "name": "Profiles" },
+      "tags": { "name": "Tags" },
+      "note_types": { "name": "Note types" },
+      "media_directory": { "name": "Media directory" },
+      "deck_cards_due": { "name": "Cards due" },
+      "deck_new_cards": { "name": "New cards" },
+      "deck_learning_cards": { "name": "Learning cards" },
+      "deck_review_cards": { "name": "Review cards" },
+      "deck_total_cards": { "name": "Total cards" }
+    },
+    "binary_sensor": {
+      "review_session_active": { "name": "Review session active" }
+    },
+    "button": {
+      "sync": { "name": "Sync" },
+      "open_deck_browser": { "name": "Open deck browser" },
+      "show_question": { "name": "Show question" },
+      "show_answer": { "name": "Show answer" },
+      "start_card_timer": { "name": "Start card timer" },
+      "undo": { "name": "Undo" },
+      "check_database": { "name": "Check database" },
+      "reload_collection": { "name": "Reload collection" },
+      "clear_unused_tags": { "name": "Clear unused tags" },
+      "remove_empty_notes": { "name": "Remove empty notes" },
+      "exit_anki": { "name": "Exit Anki" }
+    }
+  },
+  "services": {
+    "api": {
+      "name": "Call API action",
+      "description": "Call any AnkiConnect action and return its result.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "action": { "name": "Action", "description": "AnkiConnect action name, e.g. deckNames." },
+        "params": { "name": "Parameters", "description": "Optional parameters object for the action." }
+      }
+    },
+    "sync": {
+      "name": "Sync",
+      "description": "Synchronize the local collection with AnkiWeb.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." }
+      }
+    },
+    "add_note": {
+      "name": "Add note",
+      "description": "Create a new note in a deck.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "deck": { "name": "Deck", "description": "Target deck name." },
+        "model": { "name": "Note type", "description": "Note type (model) name." },
+        "fields": { "name": "Fields", "description": "Field name to value map." },
+        "tags": { "name": "Tags", "description": "Optional list of tags." }
+      }
+    },
+    "find_notes": {
+      "name": "Find notes",
+      "description": "Return note IDs matching an Anki search query.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "query": { "name": "Query", "description": "Anki browser search query." }
+      }
+    },
+    "notes_info": {
+      "name": "Notes info",
+      "description": "Return fields and tags for the given note IDs.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "notes": { "name": "Note IDs", "description": "List of note IDs." }
+      }
+    },
+    "find_cards": {
+      "name": "Find cards",
+      "description": "Return card IDs matching an Anki search query.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "query": { "name": "Query", "description": "Anki browser search query." }
+      }
+    },
+    "gui_browse": {
+      "name": "Open browser",
+      "description": "Open the card browser filtered by a query.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "query": { "name": "Query", "description": "Anki browser search query." }
+      }
+    },
+    "gui_deck_overview": {
+      "name": "Open deck overview",
+      "description": "Open the overview screen for a deck.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "deck": { "name": "Deck", "description": "Deck name." }
+      }
+    },
+    "gui_deck_review": {
+      "name": "Start deck review",
+      "description": "Start a review session for a deck.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "deck": { "name": "Deck", "description": "Deck name." }
+      }
+    },
+    "create_deck": {
+      "name": "Create deck",
+      "description": "Create a new deck (use :: for nesting).",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "deck": { "name": "Deck", "description": "New deck name." }
+      }
+    },
+    "add_tags": {
+      "name": "Add tags",
+      "description": "Add space-separated tags to notes.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "notes": { "name": "Note IDs", "description": "List of note IDs." },
+        "tags": { "name": "Tags", "description": "Space-separated tags." }
+      }
+    },
+    "remove_tags": {
+      "name": "Remove tags",
+      "description": "Remove space-separated tags from notes.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "notes": { "name": "Note IDs", "description": "List of note IDs." },
+        "tags": { "name": "Tags", "description": "Space-separated tags." }
+      }
+    },
+    "suspend": {
+      "name": "Suspend cards",
+      "description": "Suspend the given cards.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "cards": { "name": "Card IDs", "description": "List of card IDs." }
+      }
+    },
+    "unsuspend": {
+      "name": "Unsuspend cards",
+      "description": "Unsuspend the given cards.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "cards": { "name": "Card IDs", "description": "List of card IDs." }
+      }
+    },
+    "collection_stats_html": {
+      "name": "Collection stats (HTML)",
+      "description": "Return the HTML statistics report for the collection.",
+      "fields": {
+        "config_entry_id": { "name": "Anki instance", "description": "The Anki config entry to target." },
+        "whole_collection": { "name": "Whole collection", "description": "Stats for the whole collection rather than the current deck." }
+      }
+    }
+  }
+}

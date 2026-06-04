@@ -1,0 +1,2 @@
+pytest-homeassistant-custom-component==0.13.205
+pytest-cov==6.0.0

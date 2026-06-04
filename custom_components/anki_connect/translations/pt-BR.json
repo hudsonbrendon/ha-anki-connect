@@ -1,0 +1,80 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Conectar ao Anki",
+        "description": "O Anki precisa estar aberto com o complemento AnkiConnect. Para acesso de outra máquina, defina ANKICONNECT_BIND_ADDRESS=0.0.0.0 na configuração do complemento.",
+        "data": {
+          "host": "Host",
+          "port": "Porta",
+          "name": "Nome",
+          "api_key": "Chave de API (opcional)"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigurar Anki",
+        "description": "Atualize os dados de conexão desta instância do Anki.",
+        "data": {
+          "host": "Host",
+          "port": "Porta",
+          "name": "Nome",
+          "api_key": "Chave de API (opcional)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Não foi possível acessar o AnkiConnect. Verifique host, porta, chave de API e se o Anki está aberto com o complemento ativado."
+    },
+    "abort": {
+      "already_configured": "Esta instância do Anki já está configurada.",
+      "reconfigure_successful": "Anki reconfigurado com sucesso."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opções do Anki",
+        "data": {
+          "scan_interval": "Intervalo de atualização (segundos)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "cards_reviewed_today": { "name": "Cartões revisados hoje" },
+      "cards_due": { "name": "Cartões pendentes" },
+      "new_cards": { "name": "Cartões novos" },
+      "learning_cards": { "name": "Cartões em aprendizado" },
+      "review_cards": { "name": "Cartões para revisão" },
+      "total_cards": { "name": "Total de cartões" },
+      "decks": { "name": "Baralhos" },
+      "anki_connect_version": { "name": "Versão do AnkiConnect" },
+      "profiles": { "name": "Perfis" },
+      "tags": { "name": "Etiquetas" },
+      "note_types": { "name": "Tipos de nota" },
+      "media_directory": { "name": "Diretório de mídia" },
+      "deck_cards_due": { "name": "Cartões pendentes" },
+      "deck_new_cards": { "name": "Cartões novos" },
+      "deck_learning_cards": { "name": "Cartões em aprendizado" },
+      "deck_review_cards": { "name": "Cartões para revisão" },
+      "deck_total_cards": { "name": "Total de cartões" }
+    },
+    "binary_sensor": {
+      "review_session_active": { "name": "Sessão de revisão ativa" }
+    },
+    "button": {
+      "sync": { "name": "Sincronizar" },
+      "open_deck_browser": { "name": "Abrir lista de baralhos" },
+      "show_question": { "name": "Mostrar pergunta" },
+      "show_answer": { "name": "Mostrar resposta" },
+      "start_card_timer": { "name": "Iniciar cronômetro do cartão" },
+      "undo": { "name": "Desfazer" },
+      "check_database": { "name": "Verificar banco de dados" },
+      "reload_collection": { "name": "Recarregar coleção" },
+      "clear_unused_tags": { "name": "Limpar etiquetas não usadas" },
+      "remove_empty_notes": { "name": "Remover notas vazias" },
+      "exit_anki": { "name": "Fechar o Anki" }
+    }
+  }
+}

@@ -1,0 +1,216 @@
+api:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    action:
+      required: true
+      example: "deckNames"
+      selector:
+        text:
+    params:
+      example: '{"decks": ["Default"]}'
+      selector:
+        object:
+
+sync:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+
+add_note:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    deck:
+      required: true
+      example: "Default"
+      selector:
+        text:
+    model:
+      required: true
+      example: "Basic"
+      selector:
+        text:
+    fields:
+      required: true
+      example: '{"Front": "hola", "Back": "hello"}'
+      selector:
+        object:
+    tags:
+      example: "spanish"
+      selector:
+        object:
+
+find_notes:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    query:
+      required: true
+      example: "deck:Default"
+      selector:
+        text:
+
+notes_info:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    notes:
+      required: true
+      example: "[1502298033753]"
+      selector:
+        object:
+
+find_cards:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    query:
+      required: true
+      example: "deck:Default is:due"
+      selector:
+        text:
+
+gui_browse:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    query:
+      required: true
+      example: "deck:Default"
+      selector:
+        text:
+
+gui_deck_overview:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    deck:
+      required: true
+      example: "Default"
+      selector:
+        text:
+
+gui_deck_review:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    deck:
+      required: true
+      example: "Default"
+      selector:
+        text:
+
+create_deck:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    deck:
+      required: true
+      example: "Spanish::Verbs"
+      selector:
+        text:
+
+add_tags:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    notes:
+      required: true
+      example: "[1502298033753]"
+      selector:
+        object:
+    tags:
+      required: true
+      example: "marked leech"
+      selector:
+        text:
+
+remove_tags:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    notes:
+      required: true
+      example: "[1502298033753]"
+      selector:
+        object:
+    tags:
+      required: true
+      example: "leech"
+      selector:
+        text:
+
+suspend:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    cards:
+      required: true
+      example: "[1483959291685]"
+      selector:
+        object:
+
+unsuspend:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    cards:
+      required: true
+      example: "[1483959291685]"
+      selector:
+        object:
+
+collection_stats_html:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: anki_connect
+    whole_collection:
+      default: true
+      selector:
+        boolean:
