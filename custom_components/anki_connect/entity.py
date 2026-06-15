@@ -26,6 +26,12 @@ class AnkiEntity(CoordinatorEntity[AnkiDataUpdateCoordinator]):
             configuration_url=coordinator.client.url,
         )
 
+    @property
+    def available(self) -> bool:
+        # Stay available (with last-known values) whenever we have ever had a
+        # snapshot, even if Anki is currently closed and the data is offline.
+        return self.coordinator.data is not None
+
 
 class AnkiDeckEntity(CoordinatorEntity[AnkiDataUpdateCoordinator]):
     """Per-deck entity living on its own device, linked to the main one."""
@@ -49,4 +55,7 @@ class AnkiDeckEntity(CoordinatorEntity[AnkiDataUpdateCoordinator]):
 
     @property
     def available(self) -> bool:
-        return super().available and self._deck_name in self.coordinator.data.decks
+        return (
+            self.coordinator.data is not None
+            and self._deck_name in self.coordinator.data.decks
+        )

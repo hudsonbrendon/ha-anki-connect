@@ -89,14 +89,22 @@ async def test_reconfigure_updates_host_and_unique_id(hass):
     assert result["type"] is FlowResultType.FORM
     assert result["step_id"] == "reconfigure"
 
+    # Changing the host reloads the entry, which now completes setup even when
+    # Anki is unreachable; stub the coordinator refresh so the reload doesn't
+    # leave a live polling task running past the test.
     with patch(
         "custom_components.anki_connect.config_flow.AnkiConnectClient.async_version",
         return_value=6,
+    ), patch(
+        "custom_components.anki_connect.coordinator."
+        "AnkiDataUpdateCoordinator._async_update_data",
+        return_value=None,
     ):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"],
             {CONF_HOST: "5.6.7.8", CONF_PORT: DEFAULT_PORT, CONF_NAME: "Anki"},
         )
+        await hass.async_block_till_done()
 
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reconfigure_successful"

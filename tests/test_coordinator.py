@@ -69,6 +69,24 @@ async def test_update_raises_update_failed_on_error(hass):
         await coordinator._async_update_data()
 
 
+async def test_update_keeps_last_data_offline_when_anki_closed(hass):
+    # First refresh succeeds and seeds coordinator.data.
+    coordinator = _make_coordinator(hass)
+    first = await coordinator._async_update_data()
+    coordinator.data = first
+    assert first.available is True
+
+    # Anki is closed on the next poll: return the prior snapshot, marked
+    # offline, instead of raising UpdateFailed.
+    coordinator.client.async_deck_names.side_effect = AnkiConnectError("closed")
+    data = await coordinator._async_update_data()
+    assert data.available is False
+    # Last-known values are retained.
+    assert set(data.decks) == {"Default", "Spanish"}
+    assert data.cards_due == 15
+    assert data.version == 6
+
+
 async def test_version_and_static_fields_cached(hass):
     coordinator = _make_coordinator(hass)
     await coordinator._async_update_data()

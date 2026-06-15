@@ -176,6 +176,10 @@ async def async_setup_entry(
 
     @callback
     def _add_new_decks() -> None:
+        # Anki may be closed at startup, leaving no snapshot yet. Per-deck
+        # sensors are then registered once the first successful poll arrives.
+        if coordinator.data is None:
+            return
         new_entities: list[SensorEntity] = []
         for deck_name in coordinator.data.decks:
             if deck_name in known_decks:

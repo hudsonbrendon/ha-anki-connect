@@ -1,6 +1,7 @@
 """Tests for Anki sensors (aggregate, diagnostic, per-deck)."""
 from __future__ import annotations
 
+from dataclasses import replace
 from unittest.mock import patch
 
 from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT
@@ -74,3 +75,20 @@ async def test_per_deck_sensors_added_dynamically(hass):
     coordinator.async_set_updated_data(snapshot)
     await hass.async_block_till_done()
     assert hass.states.get("sensor.french_cards_due").state == "6"
+
+
+async def test_entities_keep_last_value_when_anki_closed(hass):
+    # Anki goes offline: the snapshot is retained but marked unavailable.
+    # Entities must stay available with their last-known values rather than
+    # flipping to "unavailable".
+    entry = await _setup(hass)
+    coordinator = entry.runtime_data
+    assert hass.states.get("sensor.anki_cards_due").state == "15"
+
+    coordinator.async_set_updated_data(replace(_snapshot(), available=False))
+    await hass.async_block_till_done()
+
+    state = hass.states.get("sensor.anki_cards_due")
+    assert state.state == "15"
+    assert state.state != "unavailable"
+    assert hass.states.get("sensor.spanish_cards_due").state == "9"

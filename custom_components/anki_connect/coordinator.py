@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
@@ -121,6 +121,10 @@ class AnkiDataUpdateCoordinator(DataUpdateCoordinator[AnkiData]):
             tags = await self.client.async_tags()
             models = await self.client.async_model_names()
         except AnkiConnectError as err:
+            # Anki may be closed: keep the last-known snapshot (marked offline)
+            # so entities retain their values instead of going unavailable.
+            if self.data is not None:
+                return replace(self.data, available=False)
             raise UpdateFailed(str(err)) from err
 
         decks: dict[str, DeckStats] = {}
