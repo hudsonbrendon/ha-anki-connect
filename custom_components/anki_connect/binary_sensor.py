@@ -17,8 +17,14 @@ async def async_setup_entry(
     entry: AnkiConnectConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the Anki review-active binary sensor."""
-    async_add_entities([AnkiReviewActiveBinarySensor(entry.runtime_data)])
+    """Set up the Anki binary sensors."""
+    coordinator = entry.runtime_data
+    async_add_entities(
+        [
+            AnkiReviewActiveBinarySensor(coordinator),
+            AnkiConnectivityBinarySensor(coordinator),
+        ]
+    )
 
 
 class AnkiReviewActiveBinarySensor(AnkiEntity, BinarySensorEntity):
@@ -36,3 +42,27 @@ class AnkiReviewActiveBinarySensor(AnkiEntity, BinarySensorEntity):
     @property
     def is_on(self) -> bool | None:
         return self.coordinator.data.review_active
+
+
+class AnkiConnectivityBinarySensor(AnkiEntity, BinarySensorEntity):
+    """Reports whether Anki desktop is currently reachable.
+
+    Unlike the other entities, this one stays available even when Anki is
+    closed so it can report "off" and surface the offline state to the user.
+    """
+
+    _attr_translation_key = "connected"
+    _attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
+
+    def __init__(self, coordinator: AnkiDataUpdateCoordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{coordinator.config_entry.entry_id}_connected"
+
+    @property
+    def available(self) -> bool:
+        # Stay available so it can report "off" while Anki is closed.
+        return self.coordinator.data is not None
+
+    @property
+    def is_on(self) -> bool | None:
+        return self.coordinator.data.available

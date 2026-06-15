@@ -1,6 +1,7 @@
 """Tests for the Anki config and options flow."""
 from __future__ import annotations
 
+from dataclasses import replace
 from unittest.mock import patch
 
 import pytest
@@ -11,6 +12,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.anki_connect.api import AnkiConnectError
 from custom_components.anki_connect.const import CONF_API_KEY, DEFAULT_PORT, DOMAIN
+from custom_components.anki_connect.coordinator import AnkiData
 
 
 async def test_user_flow_success(hass):
@@ -91,14 +93,21 @@ async def test_reconfigure_updates_host_and_unique_id(hass):
 
     # Changing the host reloads the entry, which now completes setup even when
     # Anki is unreachable; stub the coordinator refresh so the reload doesn't
-    # leave a live polling task running past the test.
+    # leave a live polling task running past the test. Return a realistic
+    # offline snapshot (a valid AnkiData marked unreachable) rather than None,
+    # so the reload exercises the keep-last-state path and verify_cleanup is
+    # satisfied.
+    offline_snapshot = replace(
+        AnkiData(available=True, version=6, review_active=False),
+        available=False,
+    )
     with patch(
         "custom_components.anki_connect.config_flow.AnkiConnectClient.async_version",
         return_value=6,
     ), patch(
         "custom_components.anki_connect.coordinator."
         "AnkiDataUpdateCoordinator._async_update_data",
-        return_value=None,
+        return_value=offline_snapshot,
     ):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"],

@@ -61,7 +61,8 @@
       "deck_total_cards": { "name": "Total de cartões" }
     },
     "binary_sensor": {
-      "review_session_active": { "name": "Sessão de revisão ativa" }
+      "review_session_active": { "name": "Sessão de revisão ativa" },
+      "connected": { "name": "Conectado" }
     },
     "button": {
       "sync": { "name": "Sincronizar" },

@@ -38,10 +38,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: AnkiConnectConfigEntry) 
         scan_interval=entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
     )
 
+    from homeassistant.exceptions import ConfigEntryNotReady
+
     try:
         await coordinator.async_config_entry_first_refresh()
-    except Exception:  # noqa: BLE001 - Anki may be closed at startup
-        pass
+    except ConfigEntryNotReady:
+        pass  # Anki closed at startup; entities recover on first successful poll.
     entry.runtime_data = coordinator
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
