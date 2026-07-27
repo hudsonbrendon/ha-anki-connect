@@ -1,15 +1,30 @@
 """Base entities for the Anki integration."""
 from __future__ import annotations
 
+from homeassistant.const import STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, MANUFACTURER
 from .coordinator import AnkiDataUpdateCoordinator
 
 
-class AnkiEntity(CoordinatorEntity[AnkiDataUpdateCoordinator]):
-    """Common device info for collection-wide Anki entities."""
+class AnkiEntity(RestoreEntity, CoordinatorEntity[AnkiDataUpdateCoordinator]):
+    """Common device info for collection-wide Anki entities.
+
+    ``coordinator.data`` already keeps its last value while Anki is merely
+    closed within one running process (see coordinator.py) — but that cache
+    lives in process memory, so a Home Assistant *restart* still reborns it
+    as ``None``. This base class closes that gap: it remembers, via
+    ``RestoreEntity``, whether this entity had a real (non-unavailable,
+    non-unknown) state before the restart, and factors that into
+    ``available``.
+
+    ``AnkiConnectivityBinarySensor`` overrides ``available`` itself (always
+    ``True``) and never restores its own ``is_on``, matching the same
+    connectivity-sensor exception used across the other integrations.
+    """
 
     _attr_has_entity_name = True
 
@@ -25,6 +40,22 @@ class AnkiEntity(CoordinatorEntity[AnkiDataUpdateCoordinator]):
             sw_version=str(version) if version is not None else None,
             configuration_url=coordinator.client.url,
         )
+        self._restored_available = False
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        last_state = await self.async_get_last_state()
+        self._restored_available = (
+            last_state is not None
+            and last_state.state not in (STATE_UNAVAILABLE, STATE_UNKNOWN)
+        )
+
+    @property
+    def available(self) -> bool:
+        # Stay available (with last-known values) whenever we have ever had a
+        # snapshot, even if Anki is currently closed and the data is offline,
+        # or a previous run left a valid state to restore.
+        return self.coordinator.data is not None or self._restored_available
 
 
 class AnkiDeckEntity(CoordinatorEntity[AnkiDataUpdateCoordinator]):
@@ -49,4 +80,7 @@ class AnkiDeckEntity(CoordinatorEntity[AnkiDataUpdateCoordinator]):
 
     @property
     def available(self) -> bool:
-        return super().available and self._deck_name in self.coordinator.data.decks
+        return (
+            self.coordinator.data is not None
+            and self._deck_name in self.coordinator.data.decks
+        )
