@@ -5,6 +5,7 @@ from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
+from homeassistant.const import STATE_OFF, STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -38,17 +39,29 @@ class AnkiReviewActiveBinarySensor(AnkiEntity, BinarySensorEntity):
         self._attr_unique_id = (
             f"{coordinator.config_entry.entry_id}_review_session_active"
         )
+        self._restored_is_on: bool | None = None
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        last_state = await self.async_get_last_state()
+        if last_state is not None and last_state.state in (STATE_ON, STATE_OFF):
+            self._restored_is_on = last_state.state == STATE_ON
 
     @property
     def is_on(self) -> bool | None:
-        return self.coordinator.data.review_active
+        if self.coordinator.data is not None:
+            return self.coordinator.data.review_active
+        return self._restored_is_on
 
 
 class AnkiConnectivityBinarySensor(AnkiEntity, BinarySensorEntity):
     """Reports whether Anki desktop is currently reachable.
 
-    Unlike the other entities, this one stays available even when Anki is
-    closed so it can report "off" and surface the offline state to the user.
+    Unlike the other entities, this one always stays available (even with
+    no snapshot at all, e.g. right after a cold HA restart with Anki
+    closed) so it can honestly report "off" instead of going unavailable.
+    It never restores a saved "on": connectivity is a live fact, not a
+    value worth remembering — a stale "on" must never leak back in.
     """
 
     _attr_translation_key = "connected"
@@ -60,9 +73,10 @@ class AnkiConnectivityBinarySensor(AnkiEntity, BinarySensorEntity):
 
     @property
     def available(self) -> bool:
-        # Stay available so it can report "off" while Anki is closed.
-        return self.coordinator.data is not None
+        return True
 
     @property
-    def is_on(self) -> bool | None:
+    def is_on(self) -> bool:
+        if self.coordinator.data is None:
+            return False
         return self.coordinator.data.available

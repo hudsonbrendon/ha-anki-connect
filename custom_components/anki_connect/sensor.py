@@ -5,6 +5,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from homeassistant.components.sensor import (
+    RestoreSensor,
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
@@ -196,7 +197,7 @@ async def async_setup_entry(
     entry.async_on_unload(coordinator.async_add_listener(_add_new_decks))
 
 
-class AnkiSensor(AnkiEntity, SensorEntity):
+class AnkiSensor(AnkiEntity, RestoreSensor):
     """A collection-wide sensor backed by the snapshot."""
 
     entity_description: AnkiSensorDescription
@@ -212,14 +213,24 @@ class AnkiSensor(AnkiEntity, SensorEntity):
         self._attr_unique_id = (
             f"{coordinator.config_entry.entry_id}_{description.key}"
         )
+        self._restored_value: StateType = None
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        if (last_data := await self.async_get_last_sensor_data()) is not None:
+            self._restored_value = last_data.native_value
 
     @property
     def native_value(self) -> StateType:
-        return self.entity_description.value_fn(self.coordinator.data)
+        if self.coordinator.data is not None:
+            return self.entity_description.value_fn(self.coordinator.data)
+        return self._restored_value
 
     @property
     def extra_state_attributes(self) -> dict | None:
         if self.entity_description.attr_fn is None:
+            return None
+        if self.coordinator.data is None:
             return None
         return self.entity_description.attr_fn(self.coordinator.data)
 
