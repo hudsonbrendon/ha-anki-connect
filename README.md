@@ -1,10 +1,18 @@
 <p align="center">
-  <img src="custom_components/anki_connect/brand/logo.png" alt="Anki" width="180">
+  <img src="custom_components/anki_connect/brand/logo@2x.png" alt="Anki" height="128">
 </p>
 
-<h1 align="center">Anki for Home Assistant</h1>
+# Anki for Home Assistant
 
-<p align="center">
+[![Tests](https://github.com/hudsonbrendon/ha-anki-connect/actions/workflows/tests.yml/badge.svg)](https://github.com/hudsonbrendon/ha-anki-connect/actions/workflows/tests.yml)
+[![Hassfest](https://github.com/hudsonbrendon/ha-anki-connect/actions/workflows/hassfest.yml/badge.svg)](https://github.com/hudsonbrendon/ha-anki-connect/actions/workflows/hassfest.yml)
+[![HACS](https://github.com/hudsonbrendon/ha-anki-connect/actions/workflows/validate.yml/badge.svg)](https://github.com/hudsonbrendon/ha-anki-connect/actions/workflows/validate.yml)
+[![Release](https://img.shields.io/github/v/release/hudsonbrendon/ha-anki-connect?sort=semver)](https://github.com/hudsonbrendon/ha-anki-connect/releases)
+[![Downloads](https://img.shields.io/github/downloads/hudsonbrendon/ha-anki-connect/total)](https://github.com/hudsonbrendon/ha-anki-connect/releases)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2024.12.0%2B-18BCF2?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
+[![License](https://img.shields.io/github/license/hudsonbrendon/ha-anki-connect)](LICENSE)
+
   Monitor and control your <a href="https://apps.ankiweb.net/">Anki</a> collection from Home Assistant via the
   <a href="https://github.com/amikey/anki-connect">AnkiConnect</a> add-on.
 </p>
@@ -40,6 +48,9 @@
 > Anki must be **open** for the integration to poll. While Anki is closed the entities show as unavailable.
 
 ## Installation
+
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hudsonbrendon&repository=ha-anki-connect&category=integration)
+[![Add integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=anki_connect)
 
 ### HACS (recommended)
 

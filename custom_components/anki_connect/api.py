@@ -78,7 +78,7 @@ class AnkiConnectClient:
                     raise AnkiConnectError(
                         f"AnkiConnect request '{action}' failed: {err}"
                     ) from err
-            except (aiohttp.ClientError, asyncio.TimeoutError) as err:
+            except (TimeoutError, aiohttp.ClientError) as err:
                 raise AnkiConnectError(
                     f"AnkiConnect request '{action}' failed: {err}"
                 ) from err

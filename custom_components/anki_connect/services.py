@@ -1,7 +1,7 @@
 """Services for the Anki integration: a generic action call plus typed helpers."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import voluptuous as vol
 from homeassistant.config_entries import ConfigEntryState
