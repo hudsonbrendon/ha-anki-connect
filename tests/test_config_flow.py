@@ -25,6 +25,8 @@ async def test_user_flow_success(hass):
     with patch(
         "custom_components.anki_connect.config_flow.AnkiConnectClient.async_version",
         return_value=6,
+    ), patch(
+        "custom_components.anki_connect.async_setup_entry", return_value=True
     ):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"],
